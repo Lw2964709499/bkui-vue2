@@ -278,7 +278,7 @@
 </template>
 
 <script>
-  import { bkImage, bkTable } from '{{BASE_LIB_NAME}}'
+  import { bkImage } from '{{BASE_LIB_NAME}}'
   export default {
     data () {
       return {
@@ -298,12 +298,7 @@
     }
   }
 </script>
-<script>
-  import BkTableColumn from './table-column'
-  export default {
-    components: { BkTableColumn }
-  }
-</script>
+
 ```
 :::
 

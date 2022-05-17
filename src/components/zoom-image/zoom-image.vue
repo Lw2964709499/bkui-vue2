@@ -30,44 +30,37 @@
   <section :class="[extCls, 'bk-zoom-image']">
     <img :src="src" class="bk-real-image" @click="imgSrc = src">
     <transition name="fade">
-      <div
-        v-if="imgSrc"
-        style="position: absolute; top: -100000px; left: -100000px;z-index: 9999"
-        :data-transfer="true"
-        class="bk-zoom-image"
-        v-transfer-dom>
-        <section
-          class="bk-full-screen"
-          @mousemove="mouseMove"
-          @mouseup="mouseUp"
+      <section
+        v-show="imgSrc"
+        ref="zoom-image-box"
+        class="bk-full-screen"
+        @mousemove="mouseMove"
+        @mouseup="mouseUp"
+      >
+        <img ref="screenImg"
+          :src="imgSrc"
+          @mousewheel.prevent="scrollImage"
+          @DOMMouseScroll.prevent="scrollImage"
+          @mousedown="mouseDown"
+          :class="[{ 'bk-zoom-init': isInit }, 'bk-full-image']"
+          :style="{
+            width: `${width}px`,
+            height: `${height}px`,
+            top: `${top}px`,
+            left: `${left}px`
+          }"
         >
-          <img ref="screenImg"
-            :src="imgSrc"
-            @mousewheel.prevent="scrollImage"
-            @DOMMouseScroll.prevent="scrollImage"
-            @mousedown="mouseDown"
-            :class="[{ 'bk-zoom-init': isInit }, 'bk-full-image']"
-            :style="{
-              width: `${width}px`,
-              height: `${height}px`,
-              top: `${top}px`,
-              left: `${left}px`
-            }"
-          >
-        </section>
-      </div>
+      </section>
     </transition>
   </section>
 </template>
 
 <script>
-import transferDom from '@/directives/transfer-dom'
+import zIndex from '@/mixins/z-index'
 
 export default {
   name: 'bk-zoom-image',
-  directives: {
-    transferDom
-  },
+  mixins: [zIndex],
   props: {
     src: String,
     extCls: String
@@ -83,7 +76,8 @@ export default {
       width: 0,
       height: 0,
       top: 0,
-      left: 0
+      left: 0,
+      preViewBox: null
     }
   },
 
@@ -95,6 +89,17 @@ export default {
         this.height = 0
         this.top = 0
         this.left = 0
+        if (!this.preViewBox) {
+          this.preViewBox = document.createElement('div')
+        }
+        const className = this.extCls ? 'bk-zoom-image ' + this.extCls : 'bk-zoom-image '
+        this.preViewBox.setAttribute('class', className)
+        document.body.appendChild(this.preViewBox)
+        this.$refs['zoom-image-box'].style.zIndex = this.getLocalZIndex()
+        this.preViewBox.appendChild(this.$refs['zoom-image-box'])
+      } else {
+        document.body.removeChild(this.preViewBox)
+        this.preViewBox = null
       }
     }
   },

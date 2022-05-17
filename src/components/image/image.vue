@@ -48,6 +48,7 @@
       :class="{ 'bk-image-inner-center': alignCenter, 'bk-image-preview': preview }">
     <template v-if="preview">
       <bk-image-viewer
+        ref="bk-image-viewer"
         v-if="showViewer"
         :z-index="zIndex"
         :is-show-title="isShowPreviewTitle"
